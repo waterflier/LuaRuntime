@@ -16,6 +16,8 @@ module.foo() --使用module
 
 --C 驱动模块(暂时不管)
 
+--***RuntimeGroup API
+
 --*****Runtime API
 --得到Runtime
 
@@ -26,7 +28,6 @@ module.foo() --使用module
 --创建 Sub 
 
 --得到Sub信息
-
 
 --在Runtime上运行Sub
 

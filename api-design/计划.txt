@@ -1,0 +1,17 @@
+通过分析demo,可以更加清楚的明白设计的重点
+#应用程序配置
+1.app-meta server保存的是app的信息，这里的细节以及实现很重要
+2.组件化的相关机制：模块机制（需求，问题，实现），库机制，驱动机制
+
+#算法+数据结构
+3.执行体:runtime,event,code-frame,sub
+4.app的状态保存:runtime,"runtimegroup"
+
+#调试
+
+#分布式问题 * （需要摇一摇的例子)
+5.锁
+6.事务
+
+#在Runtime中传递大块的数据
+piple

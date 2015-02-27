@@ -21,7 +21,7 @@ function WatchMain()
 				thisRuntime:GetStorage():setValue("/userinfo/tracker",{}) --清零了，等着下次出门
 			end
 		else
-			--这里不需要OtherRutnime授权? 只需要大家都有这个应用就行？
+			--！！！ 待定：这里不需要OtherRutnime授权? 只需要大家都有这个应用就行？
 			userstate = otherRuntime.try_call("GetClientState")
 			if userstate then		
 				username = userstate["username"]

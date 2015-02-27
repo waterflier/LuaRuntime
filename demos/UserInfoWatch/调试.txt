@@ -1,0 +1,26 @@
+﻿app = RegisterApp("com.demo.userinfo","1.0.0.1")  
+在哪个app-meta 服务器上发布app，表明了app处于什么状态。通常来说在外网发布，则app处于已发布状态，而在内网的app-meta服务器上发布，app处于开发状态
+
+在同一个app-meta服务器上，同一个app的一个版本只能发布一次（除非手工删除一个版本)
+
+当app处于未正式发布状态时，整个app都处于开发调试状态。
+
+在一个处于发布状态的app上升级module：错误，简化概念，升级任一模块，都应导致app升级
+
+在一个处于发布状态的app上调试module: 原因：有些问题只有在线上环境才能出现
+解决方法：1.Hook机制，可以把一些线上module的相关调用，转到测试module上?
+          2.
+		
+		local info = nil
+        local cacheGR = GetRutnimeGroup("userinfo.cache")
+		--通过cacheGR保存的zone配置，得到状态的分区信息
+		zone=cacheGR:GetZone(name) --依赖RuntimeGroupConfigServer (基于另一个Runtime实现,或配置本身保存在代码里（变成了依赖app-meta server)
+		if zone:isInMoving then
+			info = nil --该分区正在调整，简单的让本次操作失败。也可以把操作放入重试队列
+        else
+			local cacheR = cacheGR:GetRuntime(zone)
+			local info = cacheR.call(function(name)
+				usercache = cacheR.GetGlobal("Cache.UserInfo")
+				return usercache[name]
+			end,name)
+		end
