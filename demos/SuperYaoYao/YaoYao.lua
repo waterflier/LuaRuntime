@@ -1,5 +1,5 @@
-function YaoYaoNearUsers(username,key,x,y)
-	--ÒªµÇÂ¼ÓÃ»§²ÅÄÜÒ¡£¬µ«ÕâÀïÎªÁË¼òµ¥ÏÈÊ¡ÂÔÁËÑéÖ¤keyµÄ¹ı³Ì
+ï»¿function YaoYaoNearUsers(username,key,x,y)
+	--è¦ç™»å½•ç”¨æˆ·æ‰èƒ½æ‘‡ï¼Œä½†è¿™é‡Œä¸ºäº†ç®€å•å…ˆçœç•¥äº†éªŒè¯keyçš„è¿‡ç¨‹
 	
 	local bizR = GetRuntimeFromGroup("SuperYaoYao.Biz")
 	return bizR:call(function(name,gpsx,gpsy)
@@ -11,12 +11,12 @@ function YaoYaoNearUsers(username,key,x,y)
 		local bizRList = GetRuntimeListFromGroup("SuperYaoYao.Biz")
 		local rlist = {}
 		for i,v in pairs(bizRList) do
-			--£¡£¡£¡Âß¼­ÉÏĞèÒªµÄÊÇÍ¬Ê±·¢Æğ²éÑ¯,µ«ÕâÀï»áÇ¿ÒÀÀµbizRListÀï¸÷¸öRuntimeµÄË³Ğò:±ØĞëµÈ´ıÉÏÒ»¸öcall·µ»Ø½á¹ûÁË²Å»ácallÏÂÒ»¸ö
-			-- ËùÒÔÕâÀïĞèÒªasyn_call ¡£Âß¼­ÓïÒåÒ²ÊÇĞèÒªÍ¬Ê±Ö§³Öcall,asyncallµÄ
+			--ï¼ï¼ï¼é€»è¾‘ä¸Šéœ€è¦çš„æ˜¯åŒæ—¶å‘èµ·æŸ¥è¯¢,ä½†è¿™é‡Œä¼šå¼ºä¾èµ–bizRListé‡Œå„ä¸ªRuntimeçš„é¡ºåº:å¿…é¡»ç­‰å¾…ä¸Šä¸€ä¸ªcallè¿”å›ç»“æœäº†æ‰ä¼šcallä¸‹ä¸€ä¸ª
+			-- æ‰€ä»¥è¿™é‡Œéœ€è¦asyn_call ã€‚é€»è¾‘è¯­ä¹‰ä¹Ÿæ˜¯éœ€è¦åŒæ—¶æ”¯æŒcall,asyncallçš„
 			result,ulist = v:call(function(cx,cy)
 				local utable = GetCurrentRuntime():GetRuntimeState("SuperYaoYao.UserPostion")
-				--Runtime×´Ì¬µÄ¼ìË÷½Ó¿Ú£¬ÕâÀïÓÃ¾­µäµÄselectÀ´±í´ïÂß¼­ÒâÒå¡£ÕâÀï´ÓÓÅ»¯ĞÔÄÜµÄ½Ç¶ÈÀ´Ëµ£¬ĞèÒª¸ù¾İ²éÑ¯Ìõ¼ş½¨Á¢¸üÓÅ»¯µÄË÷Òı£¬·ñÔòÃ¿´Î¶¼ÒªÇóËùÓĞµÄruntimeÓĞ¶¯×÷Ì«ÂıÁË
-				--Õâ¸ö±éÀú¹ı³Ì£¬Ò²»á°üº¬×Ô¼º£¬¶ÔGetCurrentRuntime():call µÄµ÷ÓÃ£¬Ïàµ±ÓÚÍ¶µİÁËÒ»´Îasyncall? 
+				--RuntimeçŠ¶æ€çš„æ£€ç´¢æ¥å£ï¼Œè¿™é‡Œç”¨ç»å…¸çš„selectæ¥è¡¨è¾¾é€»è¾‘æ„ä¹‰ã€‚è¿™é‡Œä»ä¼˜åŒ–æ€§èƒ½çš„è§’åº¦æ¥è¯´ï¼Œéœ€è¦æ ¹æ®æŸ¥è¯¢æ¡ä»¶å»ºç«‹æ›´ä¼˜åŒ–çš„ç´¢å¼•ï¼Œå¦åˆ™æ¯æ¬¡éƒ½è¦æ±‚æ‰€æœ‰çš„runtimeæœ‰åŠ¨ä½œå¤ªæ…¢äº†
+				--è¿™ä¸ªéå†è¿‡ç¨‹ï¼Œä¹Ÿä¼šåŒ…å«è‡ªå·±ï¼Œå¯¹GetCurrentRuntime():call çš„è°ƒç”¨ï¼Œç›¸å½“äºæŠ•é€’äº†ä¸€æ¬¡asyncall? 
 				local users = utalbe:Select("select name where distance(cx,cy,x,y) < 10 and time()-updatetime < 10")
 				return 0,users
 			end,gpsx,gpsy)
@@ -42,14 +42,14 @@ function YaoYaoNearUsersUseAsynCall(username,key,x,y)
 		local bizRList = GetRuntimeListFromGroup("SuperYaoYao.Biz")
 		local rlist = {}
 		local total = #bizRList
-		--ÔÚÍ¬Ò»¸öº¯ÊıÖĞµÄÈÎÒâÎ»ÖÃµ÷ÓÃGetCurrentCodeFrame()¶¼»á·µ»ØÍ¬Ò»¸ö¶ÔÏó
+		--åœ¨åŒä¸€ä¸ªå‡½æ•°ä¸­çš„ä»»æ„ä½ç½®è°ƒç”¨GetCurrentCodeFrame()éƒ½ä¼šè¿”å›åŒä¸€ä¸ªå¯¹è±¡
 		local cf = GetCurrentCodeFrame()
 		
 		for i,v in pairs(bizRList) do
 			result,ulist = v:asyncall(function(cx,cy)
 				local utable = GetCurrentRuntime():GetRuntimeState("SuperYaoYao.UserPostion")
-				--Runtime×´Ì¬µÄ¼ìË÷½Ó¿Ú£¬ÕâÀïÓÃ¾­µäµÄselectÀ´±í´ïÂß¼­ÒâÒå
-				--Õâ¸ö±éÀú¹ı³Ì£¬Ò²»á°üº¬×Ô¼º£¬¶ÔGetCurrentRuntime():call µÄµ÷ÓÃ£¬Ïàµ±ÓÚÍ¶µİÁËÒ»´Îasyncall? 
+				--RuntimeçŠ¶æ€çš„æ£€ç´¢æ¥å£ï¼Œè¿™é‡Œç”¨ç»å…¸çš„selectæ¥è¡¨è¾¾é€»è¾‘æ„ä¹‰
+				--è¿™ä¸ªéå†è¿‡ç¨‹ï¼Œä¹Ÿä¼šåŒ…å«è‡ªå·±ï¼Œå¯¹GetCurrentRuntime():call çš„è°ƒç”¨ï¼Œç›¸å½“äºæŠ•é€’äº†ä¸€æ¬¡asyncall? 
 				local users = utalbe:Select("select name where distance(cx,cy,x,y) < 10 and time()-updatetime < 10")
 				return 0,users
 			end,function (result,ulist)
@@ -59,14 +59,14 @@ function YaoYaoNearUsersUseAsynCall(username,key,x,y)
 				end
 				
 				if total == 0 then
-					--ÕâÀï²»ÄÜÓÃGetCurrentCodeFrame():resume()
-					--ÕâÀïµÄcodeframeÒÑ¾­Óë±£´æµÄcode frame²»Í¬ÁË
+					--è¿™é‡Œä¸èƒ½ç”¨GetCurrentCodeFrame():resume()
+					--è¿™é‡Œçš„codeframeå·²ç»ä¸ä¿å­˜çš„code frameä¸åŒäº†
 					cf:resume()
 				end
 			end,gpsx,gpsy)
 		end
 		
-		--ÒıÈëasyncallºó£¬ĞèÒªÊÖ¹¤°ÑcodeframeÖÃÎªĞİÃß×´Ì¬
+		--å¼•å…¥asyncallåï¼Œéœ€è¦æ‰‹å·¥æŠŠcodeframeç½®ä¸ºä¼‘çœ çŠ¶æ€
 		cf:yield()
 		
 		return 0,rlist
