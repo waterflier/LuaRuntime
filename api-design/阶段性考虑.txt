@@ -1,0 +1,130 @@
+1.App-Meta Server
+一个Meta-Server上可以部署多个App，一个App只会属于一个Meta-Server。如果App需要更换Meta-Server，其实质上成为了另一个App。这个特性很像现在的网站
+Meta-Server上存储哪些信息？怎么存储？
+
+2.模块化
+App有模块构成，该信息存储在Meta-Server上
+模块有多个代码片段+只读资源构成 ： 如何创建一个模块，模块如何公开接口，事件
+App的实例化（模块实例化）： 是整个互联网上运行一个实例，还是App只有一个实例，不同的模块可以有不同的实例
+同一个模块如何被不同的App共享 （代码共享 or 实例共享）
+模块配置依赖，在一个Runtime上创建模块实例时如何自动的准备环境
+什么是库？
+模块如何划分？ 要按前台和后台分么
+
+3.(核心)Runtime,RuntimeGroup,Sub,Event,CodeFrame
+如何创建，得到一个Runtime实例？Runtime是否需要一个 “网络地址”
+Runtime分组，逻辑上需要分组，而且从功能上看，前台RuntimeGroup和后台RuntimeGroup是很不一样的。 使用StartupLink来启动的Runtime，都算前台RuntimeGroup?
+一个设备通过StartupLink打开的Runtime，什么时候关闭?
+Runtime之间的信任机制（逻辑上的），安全机制，权限控制
+
+往Runtime上投递一个Sub，在Sub中可以知道来源Rutime,这个Sub不能随意访问UpValue,所需要的参数必须传入。参数里可以有function,返回值也可以是function(并要求调用Runtime执行),可以以CPS的方法控制分布式系统
+Runtime的状态接口：读取/保存/查询，传统意义上的Lua Global Value是什么地位？
+Runtime的存储接口：读取/保存/查询，如何强调其IO开销
+Runtime才创建时需要声明是否需要打开状态接口和存储接口。默认不开
+Runtime的黑盒（sandbox)特性有哪些
+
+Event作为驱动Runtime运行的核心要素
+如何定义Event，一个Event归属一个模块？FireEvent？
+driver-Event如何使用?  driver-Event一定归属一个Runtime？
+需不需要RuntimeGroup级别的event,如下
+clientRG = GetRuntimeGroup("userinfo.client")
+clientRG.GetEvent("device-near"):Attach(function(clientRuntime,otherRuntime,distance)
+是否允许黑盒的Attach Runtime的事件，即attachevent操作不在任何在该Runtime执行的CodeFrame里
+
+
+4.CodeFrame,EventLoop,Driver
+CodeFrame是个比较专家的概念，使用者需要明白一个操作是否会引起FrameChange
+Driver如何使用EventLoop,CodeFrame来实现各种基础功能(主要是IO相关）
+开发Driver的SDK长什么样？需要对Runtime的底层实现了解到什么程度？一个Driver应当暴露给LuaRuntime什么样的接口和时间?
+
+============================================
+device-near事件的精确定义，是否可以实现
+
+
+
+===========关于一个Runtime投递一个Function(sub,task)到另一个Runtime运行的事情==============
+
+1个模块的代码可以在多个Runtime上运行
+1个Runtime上可以运行指定的多个模块的代码
+1个Device上可以运行多个Runtime （甚至一个传统的进程里，都可以运行多个Runtime)
+1个App有多个Module构成，Module Instance可以被App共享
+Runtime上的状态由属于模块的代码创造，所以也需要使用属于模块的代码来访问。正常情况下，模块只能读取/写入 属于自己的状态
+不使用Lua的模块概念，归根结底就是希望提供一个更稳定的，不依赖_ENV的模块管理器.可以很容易把模块和Lua的Lib分开来，并可以有效的控制App的Depends，以及解决Depends的方法
+“干掉Device+Process+Thread+ShareLib的概念，变成更基础的CodeFrame,EventLoop,Event,Function,Runtime,Module,App”
+Runtime的Owner问题：属于某个RuntimeGroup(那RuntimeGroup的Owner是?)属于某个App？ Runtime属于某个Module？Runtime本身是独立的？
+Runtime的关系：前->后 (c2s)，后->后 (s2s),前->前 (p2p),(如果有Owner  OwnerA's Runtimie->OwnerA's Runtime,OwnerA's Runtime->OwnerB's Runtime)
+Sub(function)的为了能在另一个Runtime上执行,可以作为参数/返回值，必然会有如何encode与如何decode+验证的问题 (function的序列化与安全问题)
+function包括 代码+环境+upvalue,环境信息就是Module的信息？ +  依赖模块表
+CodeFrame
+Event分类 Drive事件，Runtime事件，Module事件，内部事件
+
+
+
+UserInfo Module,其实也是要区分UserInfo ServerModule和UserInfo ClientModule的，使用UserInfo ClientModule的Runtime有一个登录的状态
+UserInfoClientModule 是每个Runtime一个Instance?
+UserInfoServerModule 是所有相关Runtime共享一个Instance? 
+module("mtest")
+
+原始:
+runtime.call(function (runtime,str)
+ print("hello!"..str)
+end,str)
+发布前打包的结果--> 
+问题：执行runtime.call 所在的模块要会包含function的代码
+于是就有了一个function object在其它模块创建，但传入到这个函数后，就变成了该模块的代码 （二义性）
+通过修改call接口成
+bizR.call(Module.CreateSub(function(name,pwd,info)
+	
+	end),name,pwd,info)
+可以解决这个问题
+lua不是编译语言，解析运行到call的时候才能CreateSub?如何让remote runtime也能得到相应的改变
+Module.CreateSub-会把结果放到meta-server上？
+一个Module所属的代码会在多个Runtime上运行
+	
+	
+module.addsub(function (runtime,str)
+	print("hello"..str) 
+end)
+runtime.call(subid,args)
+
+
+--调试版?
+function Runtime.Call(r,fun,args)
+	req = CreateReq()
+	req.subid = Module.GetSubIDFromFun(fun)
+	req.data = EncodeArgs(args)
+	piple = GetPipleToRuntime(r)
+	piple:Send(req)
+	resp = piple:GetResp()
+	results = resp:Decode()
+	return results
+end
+
+function RemoteRuntime.OnRecvRPCCall(self,req,piple)
+	subid = req.subid
+	args = DecodeArgs(req.data)
+	--Runtime有一个可识别的Module列表，只有subid在这个列表里才行
+	fun = Module.GetFunFromSubID(subid)
+	results = fun(args)
+	piple.send(Encode(results))
+end
+
+function Module.GetSubIDFromFun(moduleid,fun)
+	
+end
+
+function Module.GetFunFromSubID(subid)
+
+end
+========================
+新的App，Module,Event机制，如何融入Bolt?
+
+
+
+
+
+
+
+
+
+

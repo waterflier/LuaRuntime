@@ -1,6 +1,13 @@
 ﻿--安装MVC的方式分层，这里就是M层
 function Register(name,pwd,info)
 	local bizR = GetRuntime("userinfo.biz")
+	bizR.Register()
+	
+	bizR.call(Module.CreateSub(function(name,pwd,info)
+	
+	end),name,pwd,info)
+	
+	--encode function->send to server->decode function->is in known list
 	result = bizR.call(function(name,pwd,info)
 		--从一个RuntimeGroup中选择一个Runtime
 		local cacheR = GetRuntime("userinfo.cache")
@@ -74,6 +81,7 @@ function Login(name,pwd)
 		return 2 --用户不存在
 	end,name,pwd)
 	
+	GetCurrentRuntime():SetRuntimeState("UserInfo.Client.State",{login=true,username=name,key=key})
 	return result,key
 end
 

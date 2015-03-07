@@ -22,7 +22,7 @@ function WatchMain()
 			end
 		else
 			--！！！ 待定：这里不需要OtherRutnime授权? 只需要大家都有这个应用就行？
-			userstate = otherRuntime.try_call("GetClientState")
+			userstate = otherRuntime.try_call("GetClientState") --执行代码，读取状态?
 			if userstate then		
 				username = userstate["username"]
 				thisRuntime:GetStorage():getValue("/userinfo/tracker"):append(username)
